@@ -6,10 +6,13 @@ import xml.etree.ElementTree as ET
 import json
 import tqdm
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Create csv file for mprage meta data')
     parser.add_argument('--datadir', type=str, help='Directory containing the mprage files')
     return parser.parse_args()
+
+
 def parse_data_xml(xml_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -24,6 +27,8 @@ def parse_data_xml(xml_file):
         return data_dict
 
     return xml_to_dict(root)
+
+
 # Function to flatten the nested dictionary
 def flatten_dict(d, parent_key='', sep='_'):
     items = []
@@ -34,6 +39,8 @@ def flatten_dict(d, parent_key='', sep='_'):
         else:
             items.append((new_key, v))
     return dict(items)
+
+
 def create_df(xml_files, xml_pairs, one=False):
     df = None
     for xml_file in tqdm.tqdm(xml_files, total=len(xml_files), desc='Creating dataframe'):
@@ -48,6 +55,7 @@ def create_df(xml_files, xml_pairs, one=False):
 
     return df
 
+
 def main(args):
     datadir = args.datadir
     print(f'datadir: {datadir}')
@@ -55,7 +63,7 @@ def main(args):
     subjects = []
     xml_files = []
     for subject in os.listdir(datadir):
-        if os.path.isdir( os.path.join(datadir, subject)):
+        if os.path.isdir(os.path.join(datadir, subject)):
             subjects.append(subject)
     # list of xml files
     for f in os.listdir(datadir):
@@ -71,7 +79,7 @@ def main(args):
     df = create_df(xml_files, xml_pairs, one=True)
 
     for c in df.columns.sort_values():
-        print("--------------", c , "----------------")
+        print("--------------", c, "----------------")
         print(df[c])
 
     # do again but all the dataset
