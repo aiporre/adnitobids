@@ -23,7 +23,7 @@ def main(args):
     df_out['Orig/Proc'] = orig_proc
     df_out['SubjectID'] = df["subjectIdentifier"]
     df_out['Visit'] = df['visit_visitIdentifier']
-    df_out['MagStrength'] = df["study_imagingProtocol_protocolTerm_protocol"]
+    df_out['MagStrength'] = df["study_imagingProtocol_protocolTerm_protocol"].apply(lambda x: 1.5 if x<2.0 else 3.0)
     df_out['Sequence'] = df["study_imagingProtocol_description"]
     df_out['ScanDate'] = df["study_series_dateAcquired"]
     df_out['StudyID'] = df['study_studyIdentifier']
