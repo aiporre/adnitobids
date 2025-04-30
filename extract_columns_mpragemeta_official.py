@@ -23,12 +23,16 @@ def main(args):
     df_out['Orig/Proc'] = orig_proc
     df_out['SubjectID'] = df["subjectIdentifier"]
     df_out['Visit'] = df['visit_visitIdentifier']
-    df_out['MagStrength'] = df["study_imagingProtocol_protocolTerm_protocol"].apply(lambda x: 1.5 if x<2.0 else 3.0)
-    df_out['Sequence'] = df["study_imagingProtocol_description"]
+    if "study_imagingProtocol_protocolTerm_protocol" in df.columns:
+        mag_strength = df["study_imagingProtocol_protocolTerm_protocol"]
+    else:
+        mag_stength = df["study_series_seriesLevelMeta_relatedImageDetail_originalRelatedImage_protocolTerm_protocol"]
+    df_out['MagStrength'] = mag_stength.apply(lambda x: 1.5 if x<2.0 else 3.0)
+    df_out['Sequence'] = df["study_imagingProtocol_description"] if "study_imagingProtocol_description" in df.columns else df["study_series_seriesLevelMeta_derivedProduct_processedDataLabel"]
     df_out['ScanDate'] = df["study_series_dateAcquired"]
     df_out['StudyID'] = df['study_studyIdentifier']
     df_out['SeriesID'] = df['study_series_seriesIdentifier']
-    df_out['ImageUID'] = df['study_imagingProtocol_imageUID']
+    df_out['ImageUID'] = df['study_imagingProtocol_imageUID'] if "study_imagingProtocol_imageUID" in df.columns else df["study_series_seriesLevelMeta_derivedProduct_relatedImage_imageUID"]
 
     df_out.to_csv(output_path, index=False)
 
